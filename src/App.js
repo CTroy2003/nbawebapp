@@ -1,28 +1,24 @@
 import React, { useState, useEffect } from "react";
-import Papa from "papaparse"; 
+import Papa from "papaparse";
 import nbaCSV from "./nba.csv";
 import "./App.css";
 import * as NBAIcons from "react-nba-logos";
 
 const App = () => {
   const [games, setGames] = useState([]);
-  const [todayGames, setTodayGames] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [displayGames, setDisplayGames] = useState([]);
 
-  
-  const getFormattedDate = () => {
-    const today = new Date();
+  const getFormattedDate = (date) => {
     const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-    const day = days[today.getDay()];
-    const month = months[today.getMonth()];
-    const date = today.getDate();
-    const year = today.getFullYear();
-
-    return `${day}, ${month} ${date}, ${year}`;
+    const day = days[date.getDay()];
+    const month = months[date.getMonth()];
+    const dateNum = date.getDate();
+    const year = date.getFullYear();
+    return `${day}, ${month} ${dateNum}, ${year}`;
   };
 
-  
   const teamAbbreviations = {
     "Atlanta Hawks": "ATL",
     "Boston Celtics": "BOS",
@@ -56,54 +52,76 @@ const App = () => {
     "Washington Wizards": "WAS",
   };
 
-  
   useEffect(() => {
     Papa.parse(nbaCSV, {
       download: true,
       header: true,
       complete: (result) => {
-        setGames(result.data); 
+        setGames(result.data);
       },
     });
   }, []);
 
-  
+  const changeDate = (direction) => {
+    setSelectedDate((prevDate) => {
+      const newDate = new Date(prevDate);
+      newDate.setDate(prevDate.getDate() + direction);
+      return newDate;
+    });
+  };
+
   useEffect(() => {
-    const today = getFormattedDate();
-    const filteredGames = games.filter((game) => game["Game Date"] === today);
-    setTodayGames(filteredGames);
-  }, [games]);
+    const dateString = getFormattedDate(selectedDate);
+    const filteredGames = games.filter((game) => game["Game Date"] === dateString);
+    setDisplayGames(filteredGames);
+  }, [games, selectedDate]);
 
   return (
     <div className="App">
-      <h1 className="app-title">NBA Games Today</h1>
-      {todayGames.length > 0 ? (
-        <ul className="games-list">
-          {todayGames.map((game, index) => {
-            const visitorAbbr = teamAbbreviations[game["Visitor/Neutral"]];
-            const homeAbbr = teamAbbreviations[game["Home/Neutral"]];
+      {/* 
+        .content container to keep everything aligned in the same column.
+        If you prefer the header to span the entire screen width in blue,
+        you can move .header-container out of .content and style accordingly.
+      */}
+      <div className="content">
+        <div className="header-container">
+          <h1 className="app-title">NBA Games</h1>
+          <div className="date-navigation">
+            <button onClick={() => changeDate(-1)} className="nav-button">←</button>
+            <button onClick={() => changeDate(1)} className="nav-button">→</button>
+          </div>
+        </div>
 
-            const VisitorLogo = NBAIcons[visitorAbbr];
-            const HomeLogo = NBAIcons[homeAbbr];
+        {displayGames.length > 0 ? (
+          <ul className="games-list">
+            {displayGames.map((game, index) => {
+              const visitorAbbr = teamAbbreviations[game["Visitor/Neutral"]];
+              const homeAbbr = teamAbbreviations[game["Home/Neutral"]];
+              const VisitorLogo = NBAIcons[visitorAbbr];
+              const HomeLogo = NBAIcons[homeAbbr];
 
-            return (
-              <li key={index} className="game-card">
-                <div className="team-info">
-                  {VisitorLogo && <VisitorLogo size={40} />}
-                  <strong className="team-name">{game["Visitor/Neutral"]}</strong> at{" "}
-                  {HomeLogo && <HomeLogo size={40} className="home-logo" />}
-                  <strong className="team-name">{game["Home/Neutral"]}</strong>
-                </div>
-                <div className="divider"></div>
-                <em className="game-label">Arena:</em> <span className="game-value">{game.Arena}</span>
-                <em className="game-label">Time:</em> <span className="game-value">{game["Start"] || "Time not available"}</span>
-              </li>
-            );
-          })}
-        </ul>
-      ) : (
-        <p className="no-games">No games today</p>
-      )}
+              return (
+                <li key={index} className="game-card">
+                  <div className="team-info">
+                    {VisitorLogo && <VisitorLogo size={40} />}
+                    <strong className="team-name">{game["Visitor/Neutral"]}</strong> 
+                    {" at "}
+                    {HomeLogo && <HomeLogo size={40} className="home-logo" />}
+                    <strong className="team-name">{game["Home/Neutral"]}</strong>
+                  </div>
+                  <div className="divider"></div>
+                  <em className="game-label">Arena:</em> 
+                  <span className="game-value">{game.Arena}</span>
+                  <em className="game-label">Time:</em> 
+                  <span className="game-value">{game["Start"] || "Time not available"}</span>
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="no-games">No games scheduled for {getFormattedDate(selectedDate)}</p>
+        )}
+      </div>
     </div>
   );
 };

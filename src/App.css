@@ -1,27 +1,86 @@
-
+/* 
+  Make .App a simple vertical container. 
+  The .content is what centers our header and cards.
+*/
 .App {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   min-height: 100vh;
   font-family: Arial, sans-serif;
-  text-align: center;
   background-color: #f5f5f5;
 }
 
-.app-title {
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
-  font-weight: bold;
+/* 
+  .content ensures that header and game cards 
+  share the same max-width and are centered.
+*/
+.content {
+  max-width: 800px; /* Adjust as you like */
+  margin: 0 auto;
+  padding: 20px;
 }
 
+/* 
+  HEADER with a blue background. 
+  We'll also give the text and arrows white color.
+*/
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #1E90FF; /* or another shade of blue */
+  color: #fff;              /* text color */
+  padding: 20px;
+  border-radius: 8px;       /* optional for rounded corners */
+}
 
+/* 
+  Title: takes up flex space to remain centered 
+  while arrow buttons stay on the right. 
+*/
+.app-title {
+  flex: 1;
+  text-align: center;
+  margin: 0;
+  font-size: 2rem;
+  font-weight: bold;
+  color: inherit; /* inherits white from header-container */
+}
+
+/* ARROW BUTTONS */
+.date-navigation {
+  display: flex;
+  gap: 10px;
+}
+
+.nav-button {
+  background: none;
+  border: 2px solid #fff; /* white border to match the blue header */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: #fff; /* text color white */
+}
+
+.nav-button:hover {
+  background: #fff;
+  color: #1E90FF;
+}
+
+/* 
+  GAMES LIST & CARDS
+*/
 .games-list {
   list-style-type: none;
   padding: 0;
+  margin-top: 20px;
 }
-
 
 .game-card {
   display: flex;
@@ -31,8 +90,8 @@
   padding: 1.5rem;
   border: 2px solid #ccc;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   background-color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -40,7 +99,6 @@
   transform: scale(1.02);
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
 }
-
 
 .team-info {
   display: flex;
@@ -56,9 +114,8 @@
 }
 
 .home-logo {
-  margin-left: 2rem; 
+  margin-left: 2rem;
 }
-
 
 .divider {
   width: 90%;
@@ -66,7 +123,6 @@
   background-color: #ddd;
   margin: 1rem 0;
 }
-
 
 .game-label {
   font-size: 1rem;
@@ -82,9 +138,7 @@
   margin-left: 1rem;
 }
 
-
 .no-games {
   font-size: 1.2rem;
   color: #888;
 }
-
